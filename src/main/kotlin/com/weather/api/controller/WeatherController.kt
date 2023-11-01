@@ -14,21 +14,20 @@ import java.time.format.DateTimeFormatter
 @RequestMapping("/api/weather-forecast")
 class WeatherController(private val webClient: WebClient) {
 
-	 companion object {
+	companion object {
         private val DAY_NAMES = arrayOf(
             "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
         )
 		
      	private const val WEATHER_API_URL = "https://api.weather.gov/gridpoints/MLB/33,70/forecast" 
-		private const val RESPONSE_PROPERTIES = "properties"
-		private const val START_TIME = "startTime"
-		private const val PERIODS = "periods"
+	private const val RESPONSE_PROPERTIES = "properties"
+	private const val START_TIME = "startTime"
+	private const val PERIODS = "periods"
         private const val DAY_NAME_KEY = "day_name"
         private const val TEMP_HIGH_KEY = "temp_high_celsius"
         private const val FORECAST_BLURP_KEY = "forecast_blurp"
-		private const val TEMPARATURE = "temperature"
-		private const val DETAILED_FORECAST = "detailedForecast"
-		 
+	private const val TEMPARATURE = "temperature"
+	private const val DETAILED_FORECAST = "detailedForecast"		 
     }
 	
     @GetMapping("/today")
@@ -41,7 +40,6 @@ class WeatherController(private val webClient: WebClient) {
             .map { response ->
                 val dailyForecast = (response[RESPONSE_PROPERTIES] as Map<*, *>)[PERIODS] as List<Map<*, *>>
                 val currentDayForecast = dailyForecast.first()
-
                 val dateTimeString = currentDayForecast[START_TIME] as String
                 val dateTime = ZonedDateTime.parse(dateTimeString, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
                 val dayOfWeek = DAY_NAMES[dateTime.dayOfWeek.value % 7]
@@ -56,14 +54,6 @@ class WeatherController(private val webClient: WebClient) {
                     )
                 )
             }
-    }
+    }	
 	
-	@GetMapping("/default")
-    fun getDefaultWeatherForecast(): Mono<String> {
-        return webClient
-            .get()
-            .uri(WEATHER_API_URL)
-            .retrieve()
-            .bodyToMono(String::class.java)
-    }
 }
